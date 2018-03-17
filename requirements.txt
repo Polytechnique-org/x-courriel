@@ -1,0 +1,3 @@
+django
+getconf
+git+https://github.com/Polytechnique-org/django_platal_mapping.git
