@@ -39,21 +39,49 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'platal',
+    'mozilla_django_oidc',
+    'xcourriel'
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+)
+
+AUTHENTICATION_BACKENDS = (
+    'xcourriel.auth.XorgAuthenticationBackend',
 )
 
 ROOT_URLCONF = 'xcourriel.urls'
 
 WSGI_APPLICATION = 'xcourriel.wsgi.application'
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this
+                # list if you haven't customized them:
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.template.context_processors.request',
+                'django.contrib.messages.context_processors.messages',
+            ]
+        },
+    },
+]
 
 
 # Database
@@ -78,6 +106,17 @@ DATABASES = {
 PLATAL_MANAGED = (DATABASES['platal']['ENGINE'] == 'django.db.backends.sqlite3')
 
 DATABASE_ROUTERS = ['platal.dbrouter.PlatalRouter']
+
+# Xorgauth OIDC
+OIDC_RP_CLIENT_ID = CONFIG.getstr('xorgauth.client_id')
+OIDC_RP_CLIENT_SECRET = CONFIG.getstr('xorgauth.client_secret')
+OIDC_OP_AUTHORIZATION_ENDPOINT = CONFIG.getstr('xorgauth.authorization_endpoint', 'https://auth.polytechnique.org/openid/authorize/')
+OIDC_OP_TOKEN_ENDPOINT = CONFIG.getstr('xorgauth.token_endpoint', 'https://auth.polytechnique.org/openid/token/')
+OIDC_OP_USER_ENDPOINT = CONFIG.getstr('xorgauth.user_endpoint', 'https://auth.polytechnique.org/openid/userinfo')
+OIDC_RP_SCOPES = "openid xorg_study_years"
+OIDC_RP_SIGN_ALGO = "HS256"
+
+LOGIN_REDIRECT_URL = "/"
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
